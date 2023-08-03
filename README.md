@@ -23,4 +23,4 @@ Tests to do:
 - (no_particles) ZERO particles (don't even activate the module)
 - (min_frag) ICs with 0 entropy and >~0 fragmentation (for instance, kill the first particle)
 - (max_frag) ICs with 0 entropy and maximal fragmentation
-- restart baseline from t=1 (after performance has degraded to a more or less constant value) 
+- restart baseline from t=1 (after performance has degraded to a more or less constant value)
