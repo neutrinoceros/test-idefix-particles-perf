@@ -47,6 +47,9 @@ void Setup::InitFlow(DataBlock &data) {
 
     // add particle velocity in a process-dependent direction
     //d.Ps(DIMENSIONS + idfx::prank%DIMENSIONS, k) = pow(-1, k) * ONE_F;
+
+    // kill one-out-of two particles
+    if(k%2==0) d.PisActive(k) = false;
   }
   d.SyncToDevice();
 }
