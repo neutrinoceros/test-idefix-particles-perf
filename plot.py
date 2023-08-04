@@ -1,16 +1,12 @@
-import os
-
+import json
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-tests_cases = [
-    "baseline",
-    "max_frag",
-    "min_frag",
-    "no_particles",
-    "with_restart",
-]
+TESTS_DIR = Path(__file__).parent / "tests"
+with open(TESTS_DIR / "names.json") as fh:
+    test_cases = json.load(fh)
 
 fig, ax = plt.subplots()
 ax.set(
@@ -19,27 +15,33 @@ ax.set(
     yscale="log",
 )
 
-for i_tc, tc in enumerate(tests_cases):
-    report = os.path.join(tc, "report.json")
-    if not os.path.isfile(report):
+for i_tc, tc in enumerate(test_cases):
+    reports = sorted(TESTS_DIR.joinpath(tc).glob("*.json"))
+
+    if not reports:
         continue
 
     print(f"plotting {tc}")
-
-    series = pd.read_json(report, typ="series")
-    stacked = np.empty((len(series[0]["time"]), len(series)), dtype="float")
     color = f"C{i_tc}"
-    for i, s in enumerate(series):
-        stacked[:, i] = s["cell (updates/s)"]
-    #    ax.plot("time", "cell (updates/s)", data=s, lw=0.3, alpha=0.7, color=color)
+    nreports = len(reports)
+    for i_report, (report, linestyle) in enumerate(zip(reports, ("-", "--")), start=1):
+        series = pd.read_json(report, typ="series")
+        stacked = np.empty((len(series[0]["time"]), len(series)), dtype="float")
 
-    ax.plot(
-        series[0]["time"],
-        stacked.mean(axis=1),
-        color=color,
-        lw=2,
-        label=tc,
-    )
+        for i, s in enumerate(series):
+            stacked[:, i] = s["cell (updates/s)"]
+
+        label = tc
+        if nreports > 1:
+            label += f" ({i_report}/{nreports})"
+
+        ax.plot(
+            series[0]["time"],
+            stacked.mean(axis=1),
+            color=color,
+            lw=2,
+            label=label,
+        )
 
 ax.legend()
 sfile = "perfs.png"
