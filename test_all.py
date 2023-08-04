@@ -18,5 +18,6 @@ tests_cases = [
 ]
 
 for tc in tests_cases:
+    print(f"Running {tc} ...")
     with chdir((HERE / tc).resolve()):
         subprocess.run(["bash", "test.sh"], check=True)
