@@ -19,8 +19,8 @@ All proposed tests are aimed to measure raw performance (cell updates/s) VS simu
 In all cases, fluid/particle interaction should be suppressed and particle velocity should be 0 (so no particle is ever exchanged and we keep constant fragmentation/entropy throughout a run).
 
 Tests to do:
-- (baseline) ICs with 0 entropy
 - (no_particles) ZERO particles (don't even activate the module)
+- (baseline) ICs with 0 entropy
 - (min_frag) ICs with 0 entropy and >~0 fragmentation (for instance, kill the first particle)
 - (max_frag) ICs with 0 entropy and maximal fragmentation
-- (with_restart) restart baseline from t=5.1 (after performance has degraded to a more or less constant value) (based-off max_frag)
+- (max_frag_with_restart) restart baseline from t=5.1 (after performance has degraded to a more or less constant value) (based-off max_frag)
