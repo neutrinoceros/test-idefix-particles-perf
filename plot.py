@@ -16,14 +16,20 @@ def get_idefix_version_sha():
     return repo.head.object.hexsha
 
 
+def get_idefix_branch():
+    repo = git.Repo(os.environ["IDEFIX_DIR"])
+    return repo.active_branch
+
+
 fig, ax = plt.subplots()
 ax.set(
     xlabel="time",
     ylabel="perf (cell updates/s)",
     yscale="log",
-    title=f"idefix version: {get_idefix_version_sha()}",
+    title=f"idefix version: {get_idefix_branch()}\n{get_idefix_version_sha()}",
 )
-fig.suptitle("Impact of particle fragmentation on performance")
+# fig.suptitle("Impact of particle fragmentation on performance")
+
 for i_tc, tc in enumerate(test_cases):
     reports = sorted(TESTS_DIR.joinpath(tc).glob("*.json"))
 
