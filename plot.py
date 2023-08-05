@@ -53,6 +53,6 @@ for i_tc, tc in enumerate(test_cases):
         )
 
 ax.legend()
-sfile = "perfs.png"
+sfile = f"perfs_{get_idefix_version_sha()}.png"
 print(f"saving to {sfile}")
 fig.savefig(sfile)
