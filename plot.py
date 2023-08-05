@@ -3,18 +3,27 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import git
+import os
 
 TESTS_DIR = Path(__file__).parent / "tests"
 with open(TESTS_DIR / "names.json") as fh:
     test_cases = json.load(fh)
+
+
+def get_idefix_version_sha():
+    repo = git.Repo(os.environ["IDEFIX_DIR"])
+    return repo.head.object.hexsha
+
 
 fig, ax = plt.subplots()
 ax.set(
     xlabel="time",
     ylabel="perf (cell updates/s)",
     yscale="log",
+    title=f"idefix version: {get_idefix_version_sha()}",
 )
-
+fig.suptitle("Impact of particle fragmentation on performance")
 for i_tc, tc in enumerate(test_cases):
     reports = sorted(TESTS_DIR.joinpath(tc).glob("*.json"))
 
