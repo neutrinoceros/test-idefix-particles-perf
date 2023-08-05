@@ -48,11 +48,12 @@ for i_tc, tc in enumerate(test_cases):
             series[0]["time"],
             stacked.mean(axis=1),
             color=color,
-            lw=2,
+            linewidth=2,
+            linestyle=linestyle,
             label=label,
         )
 
-ax.legend()
+ax.legend(ncol=2)
 sfile = f"perfs_{get_idefix_version_sha()}.png"
 print(f"saving to {sfile}")
 fig.savefig(sfile)
