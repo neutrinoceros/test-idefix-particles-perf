@@ -1,7 +1,9 @@
 [
     "no_particles",
     "baseline",
+    "randomized",
     "min_frag",
     "max_frag",
-    "max_frag_with_restart"
+    "max_frag_with_restart",
+    "randomized_max_frag"
 ]

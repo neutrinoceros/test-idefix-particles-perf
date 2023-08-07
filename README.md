@@ -24,3 +24,5 @@ Tests to do:
 - (min_frag) ICs with 0 entropy and >~0 fragmentation (for instance, kill the first particle)
 - (max_frag) ICs with 0 entropy and maximal fragmentation
 - (max_frag_with_restart) restart baseline from t=5.1 (after performance has degraded to a more or less constant value) (based-off max_frag)
+- (randomized) ICs with maximal entropy (randomized positions) and 0 fragmentation
+- (randomized_max_frag) ICs with maximal entropy *and* maximal fragmentation
