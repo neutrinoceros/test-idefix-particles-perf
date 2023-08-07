@@ -21,7 +21,7 @@ def get_idefix_branch():
     return repo.active_branch
 
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(layout="constrained")
 ax.set(
     xlabel="time",
     ylabel="perf (cell updates/s)",
@@ -59,7 +59,7 @@ for i_tc, tc in enumerate(test_cases):
             label=label,
         )
 
-ax.legend(ncol=2)
+fig.legend(ncol=2, loc="outside lower center")
 sfile = f"perfs_{get_idefix_version_sha()}.png"
 print(f"saving to {sfile}")
 fig.savefig(sfile)
