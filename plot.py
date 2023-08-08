@@ -59,6 +59,13 @@ for i_tc, tc in enumerate(test_cases):
             label=label,
         )
 
+        if tc == "no_particles":
+            # Illustrate the ideal 'goal' perf (that is advertised in our proposal)
+            target_value = np.nanmean(stacked) / (1 + 8)
+            ann_kwargs = {"color": "black", "alpha": 0.6}
+            ax.axhline(target_value, ls=":", **ann_kwargs)
+            ax.annotate("target performance", (0.05, target_value * 1.1), **ann_kwargs)
+
 fig.legend(ncol=2, loc="outside lower center")
 sfile = f"perfs_{get_idefix_version_sha()}.png"
 print(f"saving to {sfile}")
