@@ -21,8 +21,7 @@ In all cases, fluid/particle interaction should be suppressed and particle veloc
 Tests to do:
 - (no_particles) ZERO particles (don't even activate the module)
 - (baseline) ICs with 0 entropy
-- (min_frag) ICs with 0 entropy and >~0 fragmentation (for instance, kill the first particle)
 - (max_frag) ICs with 0 entropy and maximal fragmentation
-- (max_frag_with_restart) restart baseline from t=5.1 (after performance has degraded to a more or less constant value) (based-off max_frag)
+- (max_frag_with_restart) restart baseline after performance has degraded to a more or less constant value (based-off max_frag)
 - (randomized) ICs with maximal entropy (randomized positions) and 0 fragmentation
 - (randomized_max_frag) ICs with maximal entropy *and* maximal fragmentation
