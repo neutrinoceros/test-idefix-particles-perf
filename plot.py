@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import git
 import os
+import warnings
 
 TESTS_DIR = Path(__file__).parent / "tests"
 with open(TESTS_DIR / "names.json") as fh:
@@ -21,12 +22,28 @@ def get_idefix_branch():
     return repo.active_branch
 
 
+def get_machine_label():
+    file = Path(__file__).parent / "machine_label.txt"
+    if file.is_file():
+        try:
+            return file.read_text().strip()
+        except OSError:
+            warnings.warn(f"failed to read {str(file)}")
+            return ""
+    else:
+        warnings.warn(f"did not find {str(file)}")
+
+
 fig, ax = plt.subplots(layout="constrained")
 ax.set(
     xlabel="time",
     ylabel="perf (cell updates/s)",
     yscale="log",
-    title=f"idefix version: {get_idefix_branch()}\n{get_idefix_version_sha()}",
+    title=(
+        f"idefix version: {get_idefix_branch()}\n"
+        f"{get_idefix_version_sha()}\n"
+        f"running on {get_machine_label() or '???'}"
+    ),
 )
 # fig.suptitle("Impact of particle fragmentation on performance")
 
@@ -67,6 +84,11 @@ for i_tc, tc in enumerate(test_cases):
             ax.annotate("target performance", (0.05, target_value * 1.1), **ann_kwargs)
 
 fig.legend(ncol=2, loc="outside lower center")
-sfile = f"perfs_{get_idefix_version_sha()}.png"
+
+if label := get_machine_label():
+    machine_suffix = f"_{label}"
+else:
+    machine_suffix = ""
+sfile = f"perfs_{get_idefix_version_sha()}{machine_suffix}.png"
 print(f"saving to {sfile}")
 fig.savefig(sfile)
