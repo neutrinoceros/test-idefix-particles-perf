@@ -54,14 +54,13 @@ for i_tc, tc in enumerate(test_cases):
     if not reports:
         continue
 
-    nprocs = len(reports)
-
     print(f"plotting {tc}")
     color = f"C{i_tc}"
     nreports = len(reports)
     for i_report, (report, linestyle) in enumerate(zip(reports, ("-", "--")), start=1):
         series = pd.read_json(report, typ="series")
         stacked = np.empty((len(series[0]["time"]), len(series)), dtype="float")
+        nprocs = len(series)
 
         for i, s in enumerate(series):
             stacked[:, i] = s["cell (updates/s)"]
