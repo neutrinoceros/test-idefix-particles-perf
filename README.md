@@ -25,3 +25,5 @@ Tests to do:
 - (max_frag_with_restart) restart baseline after performance has degraded to a more or less constant value (based-off max_frag)
 - (randomized) ICs with maximal entropy (randomized positions) and 0 fragmentation
 - (randomized_max_frag) ICs with maximal entropy *and* maximal fragmentation
+- (max_frag_with_restart_mpi) identical to max_frag_with_restart but runs twice as big a
+  problem on 2 processes.
