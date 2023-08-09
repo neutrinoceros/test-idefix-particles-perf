@@ -12,9 +12,10 @@ with open(TESTS_DIR / "names.json") as fh:
     test_cases = json.load(fh)
 
 
-def get_idefix_version_sha():
+def get_idefix_version_sha() -> str:
+    """return abreviated sha"""
     repo = git.Repo(os.environ["IDEFIX_DIR"])
-    return repo.head.object.hexsha
+    return repo.head.object.hexsha[:7]
 
 
 def get_idefix_branch():
@@ -40,8 +41,8 @@ ax.set(
     ylabel="perf (cell updates/s)",
     yscale="log",
     title=(
-        f"idefix version: {get_idefix_branch()}\n"
-        f"{get_idefix_version_sha()}\n"
+        f"idefix version: {get_idefix_branch()} "
+        f"({get_idefix_version_sha()})\n"
         f"running on {get_machine_label() or '???'}"
     ),
 )
@@ -89,6 +90,6 @@ if label := get_machine_label():
     machine_suffix = f"_{label}"
 else:
     machine_suffix = ""
-sfile = f"perfs_{get_idefix_version_sha()}{machine_suffix}.png"
+sfile = f"perfs{machine_suffix}_{get_idefix_version_sha()}.png"
 print(f"saving to {sfile}")
 fig.savefig(sfile)
