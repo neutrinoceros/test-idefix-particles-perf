@@ -38,7 +38,7 @@ def get_machine_label():
 fig, ax = plt.subplots(layout="constrained")
 ax.set(
     xlabel="time",
-    ylabel="perf (cell updates/s)",
+    ylabel="perf (cell updates/s/proc)",
     yscale="log",
     title=(
         f"idefix version: {get_idefix_branch()} "
@@ -53,6 +53,8 @@ for i_tc, tc in enumerate(test_cases):
 
     if not reports:
         continue
+
+    nprocs = len(reports)
 
     print(f"plotting {tc}")
     color = f"C{i_tc}"
@@ -70,7 +72,7 @@ for i_tc, tc in enumerate(test_cases):
 
         ax.plot(
             series[0]["time"],
-            stacked.mean(axis=1),
+            stacked.mean(axis=1) / nprocs,
             color=color,
             linewidth=2,
             linestyle=linestyle,
