@@ -24,7 +24,7 @@ void Setup::InitFlow(DataBlock &data) {
     }
   }
 
-  // put particles in sub-domain corners (with a small margin to avoid exact overlaps)
+  // randomized initial positions
   for(int k = 0; k < d.nParticles; k++) {
     d.Ps(PX1,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
     d.Ps(PX2,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);

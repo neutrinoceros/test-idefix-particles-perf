@@ -1,14 +1,19 @@
+#include <string>
 #include "idefix.hpp"
 #include "setup.hpp"
 
 real PM; // particle mass
+int perCell {-1};
 
 // Initialisation routine. Can be used to allocate
 // Arrays or variables which are used later on
 Setup::Setup(Input &input, Grid &grid, DataBlock &data, Output &output) {
   PM = input.Get<real>("Setup", "mass", 0);
+  if(input.Get<std::string>("Particles", "count", 0).compare("per_cell")!=0) {
+    IDEFIX_ERROR("this setup requires initial particle count to use 'per_cell' mode");
+  }
+  perCell = input.Get<int>("Particles", "count", 1);
 }
-
 void Setup::InitFlow(DataBlock &data) {
   DataBlockHost d(data);
 
@@ -24,29 +29,28 @@ void Setup::InitFlow(DataBlock &data) {
     }
   }
 
-  real margin[DIMENSIONS];
-  real width[DIMENSIONS];
-  for(int dir=0; dir<DIMENSIONS; dir++) {
-    width[dir] = d.xend[dir] - d.xbeg[dir];
-    margin[dir] = width[dir] * 0.05;
-  }
 
-  // put particles in sub-domain corners (with a small margin to avoid exact overlaps)
-  for(int k = 0; k < d.nParticles; k++) {
-    d.Ps(PX1,k) = d.xbeg[IDIR];
-    d.Ps(PX1,k) += (k % 2) < 1 ? margin[IDIR] : width[IDIR] - margin[IDIR];
-    d.Ps(PX2,k) = d.xbeg[JDIR];
-    d.Ps(PX2,k) += (k % 4) < 2 ? margin[JDIR] : width[JDIR] - margin[JDIR];
-    d.Ps(PX3,k) = d.xbeg[KDIR];
-    d.Ps(PX3,k) += (k % 8) < 4 ? margin[KDIR] : width[KDIR] - margin[KDIR];
-    d.Ps(PVX1,k) = ZERO_F;
-    d.Ps(PVX2,k) = ZERO_F;
-    d.Ps(PVX3,k) = ZERO_F;
+  // uniformly distribute particles at cell centers
+  const int ighost = d.nghost[IDIR];
+  const int jghost = d.nghost[JDIR];
+  const int kghost = d.nghost[KDIR];
+  int idx = 0;
+  for(int k = 0; k < d.np_int[KDIR] ; k++) {
+    for(int j = 0; j < d.np_int[JDIR] ; j++) {
+      for(int i = 0; i < d.np_int[IDIR] ; i++) {
+        for(int p = 0; p < perCell ; p++) {
+          d.Ps(PX1,idx) = d.x[IDIR](ighost+i);
+          d.Ps(PX2,idx) = d.x[JDIR](jghost+j);
+          d.Ps(PX3,idx) = d.x[KDIR](kghost+k);
+          d.Ps(PVX1,idx) = ZERO_F;
+          d.Ps(PVX2,idx) = ZERO_F;
+          d.Ps(PVX3,idx) = ZERO_F;
 
-    d.Ps(PMASS,k) = PM;
-
-    // add particle velocity in a process-dependent direction
-    //d.Ps(DIMENSIONS + idfx::prank%DIMENSIONS, k) = pow(-1, k) * ONE_F;
+          d.Ps(PMASS,idx) = PM;
+          ++idx;
+        }
+      }
+    }
   }
   d.SyncToDevice();
 }
