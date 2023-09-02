@@ -20,7 +20,11 @@ def get_idefix_version_sha() -> str:
 
 def get_idefix_branch():
     repo = git.Repo(os.environ["IDEFIX_DIR"])
-    return repo.active_branch
+    try:
+        return repo.active_branch
+    except TypeError:
+        # this may happen when idefix is in detached-HEAD view
+        return ""
 
 
 def get_machine_label():
