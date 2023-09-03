@@ -63,7 +63,7 @@ for i_tc, tc in enumerate(test_cases):
     nreports = len(reports)
     for i_report, (report, linestyle) in enumerate(zip(reports, ("-", "--")), start=1):
         series = pd.read_json(report, typ="series")
-        stacked = np.empty((len(series[0]["time"]), len(series)), dtype="float")
+        stacked = np.empty((len(series.iloc[0]["time"]), len(series)), dtype="float")
         nprocs = len(series)
 
         for i, s in enumerate(series):
@@ -74,7 +74,7 @@ for i_tc, tc in enumerate(test_cases):
             label += f" ({i_report}/{nreports})"
 
         ax.plot(
-            series[0]["time"],
+            series.iloc[0]["time"],
             stacked.mean(axis=1) / nprocs,
             color=color,
             linewidth=2,
