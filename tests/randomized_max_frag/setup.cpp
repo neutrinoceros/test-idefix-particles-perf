@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "idefix.hpp"
 #include "setup.hpp"
 
@@ -25,21 +26,21 @@ void Setup::InitFlow(DataBlock &data) {
   }
 
   // randomized initial positions
-  for(int k = 0; k < d.nParticles; k++) {
-    d.Ps(PX1,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
-    d.Ps(PX2,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
-    d.Ps(PX3,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
-    d.Ps(PVX1,k) = ZERO_F;
-    d.Ps(PVX2,k) = ZERO_F;
-    d.Ps(PVX3,k) = ZERO_F;
+  for(int idx = 0; idx < d.nParticles; idx++) {
+    d.Ps(PX1,idx) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
+    d.Ps(PX2,idx) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
+    d.Ps(PX3,idx) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
+    d.Ps(PVX1,idx) = ZERO_F;
+    d.Ps(PVX2,idx) = ZERO_F;
+    d.Ps(PVX3,idx) = ZERO_F;
 
-    d.Ps(PMASS,k) = PM;
+    d.Ps(PMASS,idx) = PM;
 
     // add particle velocity in a process-dependent direction
     //d.Ps(DIMENSIONS + idfx::prank%DIMENSIONS, k) = pow(-1, k) * ONE_F;
 
     // kill one-out-of two particles
-    if(k%2==0) d.PisActive(k) = false;
+    if(std::rand()%2==0) d.PisActive(idx) = false;
   }
   d.SyncToDevice();
 }
