@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include "idefix.hpp"
 #include "setup.hpp"
 
@@ -36,11 +35,8 @@ void Setup::InitFlow(DataBlock &data) {
 
     d.Ps(PMASS,idx) = PM;
 
-    // add particle velocity in a process-dependent direction
-    //d.Ps(DIMENSIONS + idfx::prank%DIMENSIONS, k) = pow(-1, k) * ONE_F;
-
     // kill one-out-of two particles
-    if(std::rand()%2==0) d.PisActive(idx) = false;
+    if(idx%2==0) d.PisActive(idx) = false;
   }
   d.SyncToDevice();
 }

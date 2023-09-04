@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <string>
 #include "idefix.hpp"
 #include "setup.hpp"
@@ -49,12 +48,11 @@ void Setup::InitFlow(DataBlock &data) {
           d.Ps(PVX3,idx) = ZERO_F;
 
           d.Ps(PMASS,idx) = PM;
+
+          // kill one-out-of two particles
+          if(p%2==0) d.PisActive(idx) = false;
           ++idx;
         }
-
-        d.Ps(PMASS,k) = PM;
-        // kill one-out-of two particles
-        if(std::rand()%2==0) d.PisActive(idx) = false;
       }
     }
   }
