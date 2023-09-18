@@ -25,7 +25,7 @@ void Setup::InitFlow(DataBlock &data) {
   }
 
   // randomized initial positions
-  for(int idx = 0; idx < d.nParticles; idx++) {
+  for(int idx = 0; idx < d.PactiveCount; idx++) {
     d.Ps(PX1,idx) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
     d.Ps(PX2,idx) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
     d.Ps(PX3,idx) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
