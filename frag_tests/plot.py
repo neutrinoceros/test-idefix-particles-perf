@@ -28,7 +28,7 @@ def get_idefix_branch():
 
 
 def get_machine_label():
-    file = Path(__file__).parent / "machine_label.txt"
+    file = Path(__file__).parents[1] / "machine_label.txt"
     if file.is_file():
         try:
             return file.read_text().strip()
