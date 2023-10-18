@@ -30,7 +30,7 @@ def range_power_of_two(vmin, vmax, /) -> "np.array[Any, np.dtype[np.int32]]":
 
 def submit(*, problem_size: int, nproc: int, output_dir: Path) -> None:
     """
-    Run ONE simulation. This is meant to be looped at the above level.
+    Run ONE simulation. This is meant to be looped over.
     """
     if not is_power_of_two(nproc):
         raise ValueError(f"Expected nproc to be a power of two, got {nproc}")
@@ -91,7 +91,6 @@ def submit(*, problem_size: int, nproc: int, output_dir: Path) -> None:
             "-n",
             str(nproc),
             "./idefix",
-            "-nowrite",
             "-dec",
             *(str(_) for _ in domain_dec),
         ]
