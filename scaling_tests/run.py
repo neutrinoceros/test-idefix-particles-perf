@@ -117,6 +117,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Overwrite any existing results (no clean up is performed)",
     )
+    parser.add_argument(
+        "--skip_build",
+        action="store_true",
+        help="Skip build (assume executable was already compiled)",
+    )
     args = parser.parse_args(argv)
     if args.input_file is None:
         print(
@@ -145,6 +150,12 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 1
+    if args.skip_build and not (BASE_SETUP_PATH / "idefix").is_file():
+        print(
+            "received --skip_build flag but idefix executable was not found",
+            file=sys.stderr,
+        )
+        return 1
     args.output_dir.mkdir(exist_ok=True)
 
     options = inifix.load(args.input_file, parse_scalars_as_lists=True)
@@ -158,10 +169,11 @@ def main(argv: list[str] | None = None) -> int:
     sizes = range_power_of_two(*options["size_range"])
     nprocs = range_power_of_two(*options["nproc_range"])
 
-    with chdir(BASE_SETUP_PATH):
-        run(["idfx", "clean", "--all", "--no-confirm"], check=True)
-        run(["idfx", "conf", *options["conf_flags"]], check=True)
-        run(["make", "-j8"], check=True)
+    if not args.skip_build:
+        with chdir(BASE_SETUP_PATH):
+            run(["idfx", "clean", "--all", "--no-confirm"], check=True)
+            run(["idfx", "conf", *options["conf_flags"]], check=True)
+            run(["make", "-j8"], check=True)
 
     for size, nproc in itt.product(sizes, nprocs):
         submit(problem_size=size, nproc=nproc, output_dir=args.output_dir)
