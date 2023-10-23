@@ -212,12 +212,14 @@ def main(argv: list[str] | None = None) -> int:
             run(["make", *options.get("make_flags", ["-j8"])], check=True)
 
     for size, nproc in itt.product(sizes, nprocs):
+        print(f"main loop: {size=}, {nproc=}")
         submit(
             problem_size=size,
             nproc=nproc,
             output_dir=args.output_dir,
             job_template=options.get("job_template", [None])[0],
         )
+        print(f"main loop: {size=}, {nproc=} (done)")
 
     return 0
 
