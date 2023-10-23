@@ -109,9 +109,14 @@ def submit(
             warnings.warn("this job template has not been tested")
             ntasks_per_node = 1
 
+        n_nodes = nproc / ntasks_per_node
+        if not n_nodes.is_integer():
+            raise RuntimeError(
+                f"Computation resulted in a fractional number of nodes {n_nodes}"
+            )
         options = {
             "job_name": job_name,
-            "n_nodes": nproc / ntasks_per_node,
+            "n_nodes": n_nodes,
             "decomposition": decomposition,
         }
         with open(HERE / "job_templates" / job_template) as fr:
