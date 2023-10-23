@@ -55,11 +55,11 @@ def submit(
         nproc_copy /= 8
         div, mod = divmod(nproc_copy, 8)
 
-    if nproc >= 2:
-        if (nproc % 4) == 0:
+    if nproc_copy >= 2:
+        if (nproc_copy % 4) == 0:
             domain_dec[:2] *= 2
             domain_scale[:2] *= 2
-        elif (nproc % 2) == 0:
+        elif (nproc_copy % 2) == 0:
             domain_dec[0] *= 2
             domain_scale[0] *= 2
 
