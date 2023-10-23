@@ -10,8 +10,8 @@
 # /!\ Attention, "multithread" fait reference à l'hyperthreading dans la terminologie Slurm
 #SBATCH --hint=nomultithread        # hyperthreading desactive
 #SBATCH --time=00:10:00
-#SBATCH --output=stdout-%j.out
-#SBATCH --error=stderr-%j.out
+#SBATCH --output=%j.out
+#SBATCH --error=%j.err
 
 set -euxo pipefail
 
