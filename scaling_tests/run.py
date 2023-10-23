@@ -103,8 +103,6 @@ def submit(
             "-dec",
             *decomposition,
         ]
-        check = True
-
     else:
         if job_template == "jean-zay_v100.slurm":
             ntasks_per_node = 4
@@ -130,10 +128,9 @@ def submit(
             fw.write(body.format(**options))
 
         cmd = ["sbatch", "job.sh"]
-        check = False
 
     with chdir(setup_path):
-        run(cmd, check=check)
+        run(cmd, check=True)
 
 
 def main(argv: list[str] | None = None) -> int:
