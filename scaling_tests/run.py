@@ -51,6 +51,7 @@ def submit(
     while mod == 0:
         domain_dec[:] *= 2
         domain_scale[:] *= 2
+        nproc /= 8
         div, mod = divmod(nproc, 8)
 
     if nproc >= 2:
