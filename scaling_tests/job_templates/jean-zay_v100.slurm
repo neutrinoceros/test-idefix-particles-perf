@@ -24,12 +24,4 @@ module load cmake/3.18.0
 export TMPDIR=$JOBSCRATCH
 ln -s $JOBSCRATCH /tmp/nvidia
 
-# cleanup
-idfx clean --all --no-confirm
-idfx conf -gpu -mpi
-make -j8
-
-# execution du code
-LOCAL_RANK=${SLURM_LOCALID}
-
-./idefix --kokkos-num-devices=4 -dec {decomposition}
+srun ./idefix -dec {decomposition}
