@@ -103,7 +103,7 @@ def submit(
         ]
 
     else:
-        if job_template == "jean-zay_v100":
+        if job_template == "jean-zay_v100.slurm":
             ntasks_per_node = 4
         else:
             warnings.warn("this job template has not been tested")
@@ -208,7 +208,7 @@ def main(argv: list[str] | None = None) -> int:
             problem_size=size,
             nproc=nproc,
             output_dir=args.output_dir,
-            job_template=options.get("job_template"),
+            job_template=options.get("job_template", [None])[0],
         )
 
     return 0
