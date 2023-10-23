@@ -8,14 +8,15 @@ from typing import Any
 import inifix
 import numpy as np
 from inifix.format import iniformat
+import warnings
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
 else:
     from idefix_cli.lib import chdir
 
-
-BASE_SETUP_PATH = Path(__file__).parent.joinpath("base_setup").resolve()
+HERE = Path(__file__).parent
+BASE_SETUP_PATH = HERE.joinpath("base_setup").resolve()
 
 SAMPLE_CONF = iniformat("size_range 8 32\n" "nproc_range 1 4\n" "conf_flags -mpi -gpu")
 
@@ -28,7 +29,9 @@ def range_power_of_two(vmin, vmax, /) -> "np.array[Any, np.dtype[np.int32]]":
     return 2 ** np.arange(np.log2(vmin), np.log2(2 * vmax), dtype="int32")
 
 
-def submit(*, problem_size: int, nproc: int, output_dir: Path) -> None:
+def submit(
+    *, problem_size: int, nproc: int, output_dir: Path, job_template: str | None
+) -> None:
     """
     Run ONE simulation. This is meant to be looped over.
     """
@@ -61,7 +64,9 @@ def submit(*, problem_size: int, nproc: int, output_dir: Path) -> None:
     assert np.prod(domain_dec) == nproc
     grid_shape *= domain_scale
 
-    setup_path = output_dir / f"s{problem_size}_n{nproc}"
+    job_name = f"s{problem_size}_n{nproc}"
+
+    setup_path = output_dir / job_name
     run(
         [
             "idfx",
@@ -85,16 +90,39 @@ def submit(*, problem_size: int, nproc: int, output_dir: Path) -> None:
             float(domain_scale[idir]),
         ]
     inifix.dump(conf, inifile)
-    with chdir(setup_path):
+
+    decomposition = [str(_) for _ in domain_dec]
+    if job_template is None:
         cmd = [
             "mpirun",
             "-n",
             str(nproc),
             "./idefix",
             "-dec",
-            *(str(_) for _ in domain_dec),
+            *decomposition,
         ]
-        # TODO: replace subprocess.run with an actual job submission
+
+    else:
+        if job_template == "jean-zay_v100":
+            ntasks_per_node = 4
+        else:
+            warnings.warn("this job template has not been tested")
+            ntasks_per_node = 1
+
+        options = {
+            "job_name": job_name,
+            "n_nodes": nproc / ntasks_per_node,
+            "decomposition": decomposition,
+        }
+        with open(HERE / "job_templates" / job_template) as fr:
+            body = fr.read()
+
+        with open(setup_path / "job.sh", "wt") as fw:
+            fw.write(body.format(**options))
+
+        cmd = ["sbatch", "job.sh"]
+
+    with chdir(setup_path):
         run(cmd, check=True)
 
 
@@ -176,7 +204,12 @@ def main(argv: list[str] | None = None) -> int:
             run(["make", *options.get("make_flags", ["-j8"])], check=True)
 
     for size, nproc in itt.product(sizes, nprocs):
-        submit(problem_size=size, nproc=nproc, output_dir=args.output_dir)
+        submit(
+            problem_size=size,
+            nproc=nproc,
+            output_dir=args.output_dir,
+            job_template=options.get("job_template"),
+        )
 
     return 0
 
