@@ -114,6 +114,7 @@ def submit(
             raise RuntimeError(
                 f"Computation resulted in a fractional number of nodes {n_nodes}"
             )
+        n_nodes = int(n_nodes)
         options = {
             "job_name": job_name,
             "n_nodes": n_nodes,
