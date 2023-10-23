@@ -173,7 +173,7 @@ def main(argv: list[str] | None = None) -> int:
         with chdir(BASE_SETUP_PATH):
             run(["idfx", "clean", "--all", "--no-confirm"], check=True)
             run(["idfx", "conf", *options["conf_flags"]], check=True)
-            run(["make", "-j8"], check=True)
+            run(["make", *options.get("make_flags", ["-j8"])], check=True)
 
     for size, nproc in itt.product(sizes, nprocs):
         submit(problem_size=size, nproc=nproc, output_dir=args.output_dir)
