@@ -48,11 +48,12 @@ def submit(
     domain_scale = np.ones(3, dtype="int32")
 
     div, mod = divmod(nproc, 8)
+    nproc_copy = nproc
     while mod == 0:
         domain_dec[:] *= 2
         domain_scale[:] *= 2
-        nproc /= 8
-        div, mod = divmod(nproc, 8)
+        nproc_copy /= 8
+        div, mod = divmod(nproc_copy, 8)
 
     if nproc >= 2:
         if (nproc % 4) == 0:
