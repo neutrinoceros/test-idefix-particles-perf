@@ -1,3 +1,4 @@
+#!/bin/sh
 #SBATCH --account=een@v100          # obtained with idrproj
 #SBATCH --constraint=v100-16g       # limit to 16GB nodes
 #SBATCH --job-name={job_name}       # GENERATED
