@@ -57,10 +57,15 @@ def main(argv: list[str] | None = None) -> int:
         data = np.array(series[0]["cell (updates/s)"][1:])
         mean_perfs.append(np.mean(data))
 
-    fig, ax = plt.subplots()
+    fig, axs = plt.subplots(
+        nrows=2, layout="constrained", sharex=True, gridspec_kw=dict(hspace=0, wspace=0)
+    )
+    for ax in axs.flat:
+        ax.label_outer(remove_inner_ticks=True)
+    ax = axs[0]
     ax.set(
-        xlabel="number of processes",
         ylabel="Perfs [cell update/s]",
+        xscale="log",
         yscale="log",
         title=(
             f"idefix version: {get_idefix_branch()} "
@@ -68,7 +73,35 @@ def main(argv: list[str] | None = None) -> int:
             f"running on {get_machine_label() or '???'}"
         ),
     )
-    ax.scatter(nprocs, mean_perfs, c=sizes)
+    ax.scatter(nprocs, mean_perfs, c=sizes, marker="x")
+
+    # add labels
+    seen = []
+    for nproc, mean_perf, size in zip(nprocs, mean_perfs, sizes):
+        if nproc != 1 or size in seen:
+            continue
+        seen.append(size)
+        ax.text(nproc, mean_perf, f"${size}^3$")
+
+    ax = axs[1]
+    ax.set(
+        xlabel="number of processes",
+        ylabel="Parallel efficiency",
+    )
+
+    parallel_efficiency = np.empty_like(mean_perfs)
+    for i, perf in enumerate(mean_perfs):
+        size0 = sizes[i]
+        nproc0 = nprocs[i]
+        for j, (size, nproc) in enumerate(zip(sizes, nprocs)):
+            if size == size0 and nproc == 1:
+                i0 = j
+                break
+        else:
+            raise RuntimeError("Failed to locate reference point")
+
+        parallel_efficiency[i] = perf / nproc0 / mean_perfs[i0]
+    ax.scatter(nprocs, parallel_efficiency, c=sizes)
 
     if label := get_machine_label():
         machine_suffix = f"_{label}"
