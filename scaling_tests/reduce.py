@@ -10,7 +10,7 @@ import inifix
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-i", dest="input", required=True, type=Path, help="configuration"
+        "-o", dest="output", required=True, type=Path, help="where to output results"
     )
     parser.add_argument(
         "--dir",
@@ -26,22 +26,21 @@ def main(argv: list[str] | None = None) -> int:
         print(f"no such directory {args.directory}", file=sys.stderr)
         return 1
 
-    options = inifix.load(args.input)
-
-    os.makedirs("results", exist_ok=True)
+    options = inifix.load(args.directory / "config.ini")
+    os.makedirs(args.output_dir, exist_ok=True)
     for sdir in os.listdir(args.directory):
         cmd = [
             "idfx",
             "digest",
             "--dir",
-            os.path.join(args.directory, sdir),
+            str(args.directory / sdir),
         ]
         if "digest_input" in options:
             cmd.extend(["--input", options["digest_input"]])
         ret = run(cmd, capture_output=True, check=True)
 
-        with open(os.path.join("results", sdir) + ".json", "wt") as fh:
-            fh.write(ret.stdout.decode())
+        out_file = args.output_dir.joinpath(sdir).with_suffix(".json")
+        out_file.write_text(ret.stdout.decode())
 
     return 0
 

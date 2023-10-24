@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from subprocess import run
 from typing import Any
-
+import shutil
 import inifix
 import numpy as np
 from inifix.format import iniformat
@@ -211,15 +211,15 @@ def main(argv: list[str] | None = None) -> int:
             run(["make", *options.get("make_flags", ["-j8"])], check=True)
 
     for size, nproc in itt.product(sizes, nprocs):
-        print(f"main loop: {size=}, {nproc=}")
         submit(
             problem_size=size,
             nproc=nproc,
             output_dir=args.output_dir,
             job_template=options.get("job_template", [None])[0],
         )
-        print(f"main loop: {size=}, {nproc=} (done)")
 
+    # copy the configuration file so we don't need to input it again in following steps
+    shutil.copyfile(args.input_file, args.output_dir / "config.ini")
     return 0
 
 
