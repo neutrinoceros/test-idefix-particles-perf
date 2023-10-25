@@ -10,6 +10,8 @@ from natsort import natsorted
 import git
 import os
 import warnings
+from collections import defaultdict
+from more_itertools import unzip
 
 
 def get_idefix_version_sha() -> str:
@@ -47,7 +49,8 @@ def main(argv: list[str] | None = None) -> int:
     sizes: list[int] = []
     nprocs: list[int] = []
     mean_perfs = []
-    for datafile in natsorted(args.directory.glob("*.json")):
+    datafiles = natsorted(args.directory.glob("*.json"))
+    for datafile in datafiles:
         if (
             m := re.fullmatch(r"s(?P<size>\d+)_n(?P<nproc>\d+).json", datafile.name)
         ) is not None:
@@ -56,6 +59,34 @@ def main(argv: list[str] | None = None) -> int:
         series = pd.read_json(datafile, typ="series")
         data = np.array(series[0]["cell (updates/s)"][1:])
         mean_perfs.append(np.mean(data))
+
+    parallel_efficiency = np.empty_like(mean_perfs)
+    for i, perf in enumerate(mean_perfs):
+        size0 = sizes[i]
+        nproc0 = nprocs[i]
+        for j, (size, nproc) in enumerate(zip(sizes, nprocs)):
+            if size == size0 and nproc == 1:
+                i0 = j
+                break
+        else:
+            raise RuntimeError("Failed to locate reference point")
+
+        parallel_efficiency[i] = perf / nproc0 / mean_perfs[i0]
+
+    # group data_files by problem size
+    groups: dict[int, list[tuple(int, float)]] = defaultdict(list)
+    for datafile, nproc, mean_perf, eff, size in zip(
+        datafiles, nprocs, mean_perfs, parallel_efficiency, sizes
+    ):
+        groups[size].append((nproc, mean_perf, eff))
+    curves = {
+        k: {
+            "nproc": np.array(list(unzip(v)[0])),
+            "perf": np.array(list(unzip(v)[1])),
+            "eff": np.array(list(unzip(v)[2])),
+        }
+        for k, v in groups.items()
+    }
 
     fig, axs = plt.subplots(
         nrows=2, layout="constrained", sharex=True, gridspec_kw=dict(hspace=0, wspace=0)
@@ -73,15 +104,10 @@ def main(argv: list[str] | None = None) -> int:
             f"running on {get_machine_label() or '???'}"
         ),
     )
-    ax.scatter(nprocs, mean_perfs, c=sizes, marker="x")
 
-    # add labels
-    seen = []
-    for nproc, mean_perf, size in zip(nprocs, mean_perfs, sizes):
-        if nproc != 1 or size in seen:
-            continue
-        seen.append(size)
-        ax.text(nproc, mean_perf, f"${size}^3$")
+    for size, curve in curves.items():
+        ax.plot("nproc", "perf", marker="x", label=f"${size}^3$", data=curve)
+    ax.legend()
 
     ax = axs[1]
     ax.set(
@@ -89,19 +115,10 @@ def main(argv: list[str] | None = None) -> int:
         ylabel="Parallel efficiency",
     )
 
-    parallel_efficiency = np.empty_like(mean_perfs)
-    for i, perf in enumerate(mean_perfs):
-        size0 = sizes[i]
-        nproc0 = nprocs[i]
-        for j, (size, nproc) in enumerate(zip(sizes, nprocs)):
-            if size == size0 and nproc == 1:
-                i0 = j
-                break
-        else:
-            raise RuntimeError("Failed to locate reference point")
+    for curve in curves.values():
+        ax.plot("nproc", "eff", marker="x", data=curve)
 
-        parallel_efficiency[i] = perf / nproc0 / mean_perfs[i0]
-    ax.scatter(nprocs, parallel_efficiency, c=sizes)
+    # ax.scatter(nprocs, parallel_efficiency, c=sizes)
 
     if label := get_machine_label():
         machine_suffix = f"_{label}"
