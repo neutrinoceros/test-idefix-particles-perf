@@ -24,7 +24,6 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     options = inifix.load(args.directory / "config.ini")
-    os.makedirs(args.output_dir, exist_ok=True)
     for sdir in os.listdir(args.directory):
         cmd = [
             "idfx",
@@ -36,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
             cmd.extend(["--input", options["digest_input"]])
         ret = run(cmd, capture_output=True, check=True)
 
-        out_file = args.output_dir.joinpath(sdir).with_suffix(".json")
+        out_file = args.directory.joinpath(sdir).with_suffix(".json")
         out_file.write_text(ret.stdout.decode())
 
     return 0
