@@ -36,7 +36,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             ret = run(cmd, capture_output=True, check=True)
         except CalledProcessError as exc:
-            print(exc.stdout, file=sys.stderr)
+            print(exc.stderr, file=sys.stderr)
             return 1
 
         out_file = args.directory.joinpath(sdir).with_suffix(".json")
