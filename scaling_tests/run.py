@@ -119,7 +119,7 @@ def submit(
         options = {
             "job_name": job_name,
             "n_nodes": n_nodes,
-            "decomposition": decomposition,
+            "decomposition": " ".join(decomposition),
         }
         with open(HERE / "job_templates" / job_template) as fr:
             body = fr.read()
