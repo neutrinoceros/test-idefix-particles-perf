@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from subprocess import run
+from subprocess import run, CalledProcessError
 
 import inifix
 
@@ -33,7 +33,11 @@ def main(argv: list[str] | None = None) -> int:
         ]
         if "digest_input" in options:
             cmd.extend(["--input", options["digest_input"]])
-        ret = run(cmd, capture_output=True, check=True)
+        try:
+            ret = run(cmd, capture_output=True, check=True)
+        except CalledProcessError as exc:
+            print(exc.stdout, file=sys.stderr)
+            return 1
 
         out_file = args.directory.joinpath(sdir).with_suffix(".json")
         out_file.write_text(ret.stdout.decode())
