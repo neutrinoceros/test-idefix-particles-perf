@@ -30,28 +30,18 @@ void Setup::InitFlow(DataBlock &data) {
   }
 
 
-  // uniformly distribute particles at cell centers
-  const int ighost = d.nghost[IDIR];
-  const int jghost = d.nghost[JDIR];
-  const int kghost = d.nghost[KDIR];
-  int idx = 0;
-  for(int k = 0; k < d.np_int[KDIR] ; k++) {
-    for(int j = 0; j < d.np_int[JDIR] ; j++) {
-      for(int i = 0; i < d.np_int[IDIR] ; i++) {
-        for(int p = 0; p < perCell ; p++) {
-          d.Ps(PX1,idx) = d.x[IDIR](ighost+i);
-          d.Ps(PX2,idx) = d.x[JDIR](jghost+j);
-          d.Ps(PX3,idx) = d.x[KDIR](kghost+k);
-          d.Ps(PVX1,idx) = ZERO_F;
-          d.Ps(PVX2,idx) = ZERO_F;
-          d.Ps(PVX3,idx) = ZERO_F;
+  // randomized initial positions and velocities
+  for(int k = 0; k < d.PactiveCount; k++) {
+    d.Ps(PX1,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
+    d.Ps(PX2,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
+    d.Ps(PX3,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
+    d.Ps(PVX1,k) = 2e-3 * (0.5 - idfx::randm());
+    d.Ps(PVX2,k) = 2e-3 * (0.5 - idfx::randm());
+    d.Ps(PVX3,k) = 2e-3 * (0.5 - idfx::randm());
 
-          d.Ps(PMASS,idx) = PM;
-          ++idx;
-        }
-      }
-    }
+    d.Ps(PMASS,k) = PM;
   }
+
   d.SyncToDevice();
 }
 
