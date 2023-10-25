@@ -10,9 +10,6 @@ import inifix
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-o", dest="output", required=True, type=Path, help="where to output results"
-    )
-    parser.add_argument(
         "--dir",
         dest="directory",
         required=True,
