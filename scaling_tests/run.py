@@ -105,7 +105,7 @@ def submit(
         ]
     else:
         if job_template == "jean-zay_v100.slurm":
-            ntasks_per_node = 4
+            ntasks_per_node = min(4, nproc)
         else:
             warnings.warn("this job template has not been tested")
             ntasks_per_node = 1
@@ -119,6 +119,7 @@ def submit(
         options = {
             "job_name": job_name,
             "n_nodes": n_nodes,
+            "ntasks_per_node": ntasks_per_node,
             "decomposition": " ".join(decomposition),
         }
         with open(HERE / "job_templates" / job_template) as fr:

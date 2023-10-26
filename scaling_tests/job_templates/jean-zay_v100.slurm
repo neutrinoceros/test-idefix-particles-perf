@@ -1,10 +1,10 @@
 #!/bin/sh
 #SBATCH --account=een@v100          # obtained with idrproj
-#SBATCH --constraint=v100-16g       # limit to 16GB nodes
-#SBATCH --job-name={job_name}       # GENERATED
-#SBATCH --nodes={n_nodes}            # GENERATED
-#SBATCH --ntasks-per-node=4         # nombre de tache MPI par noeud (=nb de GPU)
-#SBATCH --gres=gpu:4                # nombre de GPU par noeud
+#SBATCH --constraint=v100-32g       # limit to 32GB nodes
+#SBATCH --job-name={job_name}
+#SBATCH --nodes={n_nodes}
+#SBATCH --ntasks-per-node={ntasks_per_node}
+#SBATCH --gres=gpu:{ntasks_per_node}
 #SBATCH --cpus-per-task=10          # nombre de coeurs CPU par tache (un quart du noeud ici)
 
 # /!\ Attention, "multithread" fait reference à l'hyperthreading dans la terminologie Slurm
