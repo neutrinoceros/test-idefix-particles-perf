@@ -25,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
 
     options = inifix.load(args.directory / "config.ini")
     for sdir in os.listdir(args.directory):
-        if not (args.directory / sdir).isdir():
+        if not (args.directory / sdir).is_dir():
             continue
         print(f"visiting {args.directory/sdir}", file=sys.stderr)
         cmd = [
