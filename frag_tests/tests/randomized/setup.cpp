@@ -26,17 +26,14 @@ void Setup::InitFlow(DataBlock &data) {
 
   // randomized initial positions
   for(int k = 0; k < d.PactiveCount; k++) {
-    d.Ps(PX1,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
-    d.Ps(PX2,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
+    d.Ps(PX1,k) = d.xbeg[IDIR] + idfx::randm() * (d.xend[IDIR] - d.xbeg[IDIR]);
+    d.Ps(PX2,k) = d.xbeg[JDIR] + idfx::randm() * (d.xend[JDIR] - d.xbeg[JDIR]);
     d.Ps(PX3,k) = d.xbeg[KDIR] + idfx::randm() * (d.xend[KDIR] - d.xbeg[KDIR]);
     d.Ps(PVX1,k) = ZERO_F;
     d.Ps(PVX2,k) = ZERO_F;
     d.Ps(PVX3,k) = ZERO_F;
 
     d.Ps(PMASS,k) = PM;
-
-    // add particle velocity in a process-dependent direction
-    //d.Ps(DIMENSIONS + idfx::prank%DIMENSIONS, k) = pow(-1, k) * ONE_F;
   }
   d.SyncToDevice();
 }
