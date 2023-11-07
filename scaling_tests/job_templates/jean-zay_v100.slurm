@@ -9,7 +9,7 @@
 
 # /!\ Attention, "multithread" fait reference à l'hyperthreading dans la terminologie Slurm
 #SBATCH --hint=nomultithread        # hyperthreading desactive
-#SBATCH --time=00:01:00
+#SBATCH --time=00:05:00
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
 
