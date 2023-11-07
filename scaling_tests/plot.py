@@ -97,7 +97,7 @@ def main(argv: list[str] | None = None) -> int:
         ax.label_outer(remove_inner_ticks=True)
     ax = axs[0]
     ax.set(
-        ylabel="Perfs [cell update/s]",
+        ylabel="Perfs [cell update/s/process]",
         xscale="log",
         yscale="log",
         title=(
