@@ -106,7 +106,8 @@ def main(argv: list[str] | None = None) -> int:
             f"running on {get_machine_label() or '???'}"
         ),
     )
-
+    sax = ax.secondary_yaxis("right", functions=(lambda x: x * 8, lambda x: x / 8))
+    sax.set(ylabel="Perfs [particle update/s/process]")
     for curve in curves.values():
         ax.plot("nproc", "perf/proc", marker="x", data=curve)
 
