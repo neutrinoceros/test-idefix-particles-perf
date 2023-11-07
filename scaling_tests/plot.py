@@ -87,6 +87,8 @@ def main(argv: list[str] | None = None) -> int:
         }
         for k, v in groups.items()
     }
+    for k in curves.keys():
+        curves[k]["perf/proc"] = curves[k]["perf"] / curves[k]["nproc"]
 
     fig, axs = plt.subplots(
         nrows=2, layout="constrained", sharex=True, gridspec_kw=dict(hspace=0, wspace=0)
@@ -106,7 +108,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     for size, curve in curves.items():
-        ax.plot("nproc", "perf", marker="x", label=f"${size}^3$", data=curve)
+        ax.plot("nproc", "perf/proc", marker="x", label=f"${size}^3$", data=curve)
     ax.legend()
 
     ax = axs[1]
