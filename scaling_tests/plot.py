@@ -107,7 +107,7 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
 
-    for size, curve in curves.items():
+    for curve in curves.values():
         ax.plot("nproc", "perf/proc", marker="x", data=curve)
 
     ax = axs[1]
@@ -116,7 +116,7 @@ def main(argv: list[str] | None = None) -> int:
         ylabel="Parallel efficiency",
     )
 
-    for curve in curves.values():
+    for size, curve in curves.items():
         ax.plot("nproc", "eff", marker="x", data=curve, label=f"${size}^3$")
     ax.legend(frameon=False)
 
