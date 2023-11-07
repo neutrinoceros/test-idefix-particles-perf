@@ -57,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
             sizes.append(int(m.group("size")))
             nprocs.append(int(m.group("nproc")))
         series = pd.read_json(datafile, typ="series")
-        data = np.array(series[0]["cell (updates/s)"][1:])
+        data = np.array(series.iloc[0]["cell (updates/s)"][1:])
         mean_perfs.append(np.mean(data))
 
     parallel_efficiency = np.empty_like(mean_perfs)
