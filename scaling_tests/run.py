@@ -30,7 +30,12 @@ def range_power_of_two(vmin, vmax, /) -> "np.array[Any, np.dtype[np.int32]]":
 
 
 def submit(
-    *, problem_size: int, nproc: int, output_dir: Path, job_template: str | None
+    *,
+    problem_size: int,
+    nproc: int,
+    particles_per_cell: int,
+    output_dir: Path,
+    job_template: str | None,
 ) -> None:
     """
     Run ONE simulation. This is meant to be looped over.
@@ -68,6 +73,16 @@ def submit(
 
     job_name = f"s{problem_size}_n{nproc}"
 
+    if particles_per_cell == 0:
+        job_name = f"NP{job_name}"
+    elif particles_per_cell == 8:
+        pass
+    else:
+        raise ValueError(
+            "Expected particles_per_cell to be either 0 or 8. "
+            f"Got {particles_per_cell}"
+        )
+
     setup_path = output_dir / job_name
     run(
         [
@@ -91,6 +106,7 @@ def submit(
             "u",
             float(domain_scale[idir]),
         ]
+    conf["Particles"]["count"] = ["per_cell", particles_per_cell]
     inifix.dump(conf, inifile)
 
     decomposition = [str(_) for _ in domain_dec]
@@ -204,6 +220,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sizes = range_power_of_two(*options["size_range"])
     nprocs = range_power_of_two(*options["nproc_range"])
+    ppcs = [0, 8]  # particles per cell
 
     if not args.skip_build:
         with chdir(BASE_SETUP_PATH):
@@ -211,10 +228,11 @@ def main(argv: list[str] | None = None) -> int:
             run(["idfx", "conf", *options["conf_flags"]], check=True)
             run(["make", *options.get("make_flags", ["-j8"])], check=True)
 
-    for size, nproc in itt.product(sizes, nprocs):
+    for size, nproc, ppc in itt.product(sizes, nprocs, ppcs):
         submit(
             problem_size=size,
             nproc=nproc,
+            particles_per_cell=ppc,
             output_dir=args.output_dir,
             job_template=options.get("job_template", [None])[0],
         )
