@@ -106,7 +106,10 @@ def submit(
             "u",
             float(domain_scale[idir]),
         ]
-    conf["Particles"]["count"] = ["per_cell", particles_per_cell]
+    if particles_per_cell == 0:
+        conf.pop("Particles")
+    else:
+        conf["Particles"]["count"] = ["per_cell", particles_per_cell]
     inifix.dump(conf, inifile)
 
     decomposition = [str(_) for _ in domain_dec]
