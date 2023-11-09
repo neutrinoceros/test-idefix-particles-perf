@@ -107,8 +107,10 @@ def submit(
             float(domain_scale[idir]),
         ]
     if particles_per_cell == 0:
+        conf["Setup"]["haveParticles"] = False
         conf.pop("Particles")
     else:
+        conf["Setup"]["haveParticles"] = True
         conf["Particles"]["count"] = ["per_cell", particles_per_cell]
     inifix.dump(conf, inifile)
 
