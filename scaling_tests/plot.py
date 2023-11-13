@@ -29,7 +29,7 @@ def get_idefix_branch():
         return ""
 
 
-def get_machine_label():
+def get_machine_label() -> str:
     file = Path(__file__).parents[1] / "machine_label.txt"
     if file.is_file():
         try:
@@ -39,6 +39,7 @@ def get_machine_label():
             return ""
     else:
         warnings.warn(f"did not find {str(file)}")
+        return ""
 
 
 def plot_perf(
@@ -115,6 +116,7 @@ def plot_perf(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dir", dest="directory", required=True, type=Path)
+    parser.add_argument("--title", type=str, help="Custom figure title")
     args = parser.parse_args(argv)
 
     # init figure
@@ -128,7 +130,9 @@ def main(argv: list[str] | None = None) -> int:
         ylabel="Perfs [cell update/s/process]",
         xscale="log",
         yscale="log",
-        title=(
+        title=args.title
+        if args.title is not None
+        else (
             f"idefix version: {get_idefix_branch()} "
             f"({get_idefix_version_sha()})\n"
             f"running on {get_machine_label() or '???'}"

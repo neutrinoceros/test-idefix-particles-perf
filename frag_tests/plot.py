@@ -27,7 +27,7 @@ def get_idefix_branch():
         return ""
 
 
-def get_machine_label():
+def get_machine_label() -> str:
     file = Path(__file__).parents[1] / "machine_label.txt"
     if file.is_file():
         try:
@@ -37,6 +37,7 @@ def get_machine_label():
             return ""
     else:
         warnings.warn(f"did not find {str(file)}")
+        return ""
 
 
 fig, ax = plt.subplots(layout="constrained")
