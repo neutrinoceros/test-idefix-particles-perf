@@ -1,5 +1,7 @@
 idefix-cli>=3.1
-matplotlib>=3.7
+inifix>=3.1
+matplotlib>=3.8
 numpy>=1.22
 pandas>=2.0
 GitPython>=3.1.32
+natsort>=8.4
