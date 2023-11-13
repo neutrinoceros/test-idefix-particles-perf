@@ -1,3 +1,4 @@
 # test-idefix-particles-perf
 
-This repo contains test setups + analysis scripts used to measure performances of Idefix's particles module.
+> This repo is now a read-only archive. Its content was transfered integrated to the
+> following repository https://github.com/idefix-code/benchmarks
